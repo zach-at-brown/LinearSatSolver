@@ -1,0 +1,15 @@
+Instance: C140_FW.cnf Time: 0.37 Result: ?
+Instance: C168_FW_SZ_128.cnf Time: 0.36 Result: ?
+Instance: C168_FW_UT_538.cnf Time: 0.41 Result: ?
+Instance: C169_FV.cnf Time: 0.19 Result: ?
+Instance: C181_FW_SZ_3151.cnf Time: 0.26 Result: ?
+Instance: C208_FA_SZ_120.cnf Time: 0.33 Result: ?
+Instance: C208_FA_UT_3254.cnf Time: 0.42 Result: ?
+Instance: C210_FS_SZ_55.cnf Time: 0.35 Result: ?
+Instance: C210_FW_RZ_30.cnf Time: 0.39 Result: ?
+Instance: C220_FV_UT_1166.cnf Time: 0.38 Result: ?
+Instance: C220_FV_UT_1167.cnf Time: 0.37 Result: ?
+Instance: C459_FA_SZ_4675.cnf Time: 0.32 Result: ?
+Instance: C638_FKA_UT_190.cnf Time: 0.41 Result: ?
+Instance: simple.cnf Time: 0.03 Result: ?
+Instance: solveable.cnf Time: 0.04 Result: ?
