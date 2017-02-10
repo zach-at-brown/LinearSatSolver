@@ -73,8 +73,8 @@ public class SATInstance
       }
     }
 
-  	
-  
+
+
   }
 
 
@@ -94,12 +94,12 @@ public class SATInstance
     }
   }
 
-  
+
   protected boolean eliminatePureVariables(){
-   boolean foundPure = false; 
+   boolean foundPure = false;
    Set<Integer> usedVars = new HashSet<Integer>();
 
-	 
+
    for (int i = 0; i < numClauses; i++)
    {
 	usedVars.addAll(clauses.get(i));
@@ -117,31 +117,31 @@ public class SATInstance
 	}
   }
 
-    return foundPure; 
+    return foundPure;
   }
 
 
   protected boolean eliminateFirstUnitClause(){
-   boolean foundUnit = false; 
-	 
+   boolean foundUnit = false;
+
    for (int i = 0; i < numClauses; i++){
 	Set<Integer> IthClause = clauses.get(i);
 	if(IthClause.size() == 1){
 	  //System.out.println("unit clause at index" + i);
 	  Integer entryToSet = (Integer)(IthClause.toArray())[0];
-	  System.out.println("assigning " + Math.abs(entryToSet) + " to be " + (entryToSet > 0)); 
+	  System.out.println("assigning " + Math.abs(entryToSet) + " to be " + (entryToSet > 0));
 	  setVariable(entryToSet);
 	  foundUnit = true;
 	  break;
-	  
+
 	}
     }
 
-    return foundUnit; 
+    return foundUnit;
   }
 
   //NOTE: this method may have to change substantially to support branching
-  private void setVariable(Integer varToAssign){ 
+  private void setVariable(Integer varToAssign){
      //mark the choice in our instance
      if(branches.empty())
      {
@@ -156,7 +156,7 @@ public class SATInstance
      removeClausesContaining(varToAssign);
   }
 
-  
+
 /**
 * Description functions
 */
@@ -167,6 +167,26 @@ public class SATInstance
 		System.out.println(entry.getKey() + " : " + entry.getValue());
 	}
   }
+
+  //Checks if there are any empty clauses
+  //NOTE : Probably need to append more conditions
+  public boolean isUnsat()
+  {
+    boolean unsat = false;
+    if(this.numClauses > 0)
+    {
+      for(int c = 0; c < this.clauses.size(); c++)
+      {
+        if(this.clauses.get(c).isEmpty())
+        {
+          unsat = true;
+          break;
+        }
+      }
+    }
+    return unsat;
+  }
+
 
   public String toString()
   {
