@@ -28,7 +28,18 @@ public class Main
 
 		System.out.println(instance);
 
+		instance.eliminateFirstUnitClause();
+		System.out.println(instance);
+		instance.describeAssignments();
+
 		watch.stop();
     System.out.println("Instance: " + filename + " Time: " + String.format("%.2f",watch.getTime()) + " Result: ?");
   }
+
+  
+
 }
+
+
+
+

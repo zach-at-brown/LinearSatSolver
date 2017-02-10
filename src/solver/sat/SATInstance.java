@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple class to represent a SAT instance.
@@ -13,13 +15,16 @@ public class SATInstance
   // The number of variables
   int numVars;
 
-	// The number of clauses
+  // The number of clauses
   int numClauses;
 
-	// The set of variables (variables are strictly positive integers)
+  // The set of variables (variables are strictly positive integers)
   Set<Integer> vars = new HashSet<Integer>();
 
-	// The list of clauses
+  //Hashmap of variable assignments
+  HashMap<Integer, Boolean> assignments = new HashMap<Integer, Boolean>();
+
+  // The list of clauses
   List<Set<Integer>> clauses = new ArrayList<Set<Integer>>();
 
   public SATInstance(int numVars, int numClauses)
@@ -38,12 +43,31 @@ public class SATInstance
     this.clauses.add(clause);
   }
 
+  //NOTE: I know we said we need this, but I'm not sure we actually do
   //Removes clause by specified element at index
   void removeClause(Integer index)
   {
     this.clauses.remove(this.clauses.get(index));
     this.numClauses--;
   }
+
+  void removeClausesContaining(Integer literal)
+  {
+    for(int c = clauses.size()-1; c >= 0; c-- )
+    {
+      Set<Integer> thisClause = clauses.get(c);
+      //Check if clause contains literal
+      if(thisClause.contains(literal))
+      {
+	clauses.remove(thisClause);
+	numClauses--;
+      }
+    }
+
+  	
+  
+  }
+
 
   //Removes all occurrences of a literal from all clauses
   //eg: removing -1 only removes occurrences of -1 from all clauses.
@@ -61,6 +85,49 @@ public class SATInstance
     }
   }
 
+  
+
+  protected boolean eliminateFirstUnitClause(){
+   boolean foundUnit = false; 
+	 
+   for (int i = 0; i < numClauses; i++){
+	Set<Integer> IthClause = clauses.get(i);
+	if(IthClause.size() == 1){
+	  //System.out.println("unit clause at index" + i);
+	  Integer entryToSet = (Integer)(IthClause.toArray())[0];
+	  System.out.println("assigning " + Math.abs(entryToSet) + " to be " + (entryToSet > 0)); 
+	  setVariable(entryToSet);
+	  foundUnit = true;
+	  break;
+	  
+	}
+    }
+
+    return foundUnit; 
+  }
+
+  //NOTE: this method may have to change substantially to support branching
+  private void setVariable(Integer varToAssign){ 
+     //mark the choice in our instance
+     assignments.put(Math.abs(varToAssign), varToAssign > 0);
+
+     //propagate changes to other clauses
+     removeLiteral(-1 * varToAssign);
+     removeClausesContaining(varToAssign);
+  }
+
+  
+/**
+* Description functions
+*/
+  public void describeAssignments()
+  {
+	for (Map.Entry<Integer, Boolean> entry : assignments.entrySet())
+	{
+		System.out.println(entry.getKey() + " : " + entry.getValue());
+	}
+  }
+
   public String toString()
   {
     StringBuffer buf = new StringBuffer();
@@ -71,4 +138,6 @@ public class SATInstance
 			buf.append("Clause " + c + ": " + this.clauses.get(c).toString() + "\n");
     return buf.toString();
   }
+
+
 }
