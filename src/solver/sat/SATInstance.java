@@ -10,18 +10,18 @@ import java.util.Set;
  */
 public class SATInstance
 {
-  // The number of variables 
+  // The number of variables
   int numVars;
-	
+
 	// The number of clauses
   int numClauses;
-  
+
 	// The set of variables (variables are strictly positive integers)
   Set<Integer> vars = new HashSet<Integer>();
-	
+
 	// The list of clauses
   List<Set<Integer>> clauses = new ArrayList<Set<Integer>>();
-  
+
   public SATInstance(int numVars, int numClauses)
   {
 		this.numVars = numVars;
@@ -30,22 +30,45 @@ public class SATInstance
 
   void addVariable(Integer literal)
   {
-    vars.add( (literal < 0)? -1 * literal : literal);
+    this.vars.add( (literal < 0)? -1 * literal : literal);
   }
 
   void addClause(Set<Integer> clause)
   {
-    clauses.add(clause);
+    this.clauses.add(clause);
   }
-  
+
+  //Removes clause by specified element at index
+  void removeClause(Integer index)
+  {
+    this.clauses.remove(this.clauses.get(index));
+    this.numClauses--;
+  }
+
+  //Removes all occurrences of a literal from all clauses
+  //eg: removing -1 only removes occurrences of -1 from all clauses.
+  // 1 may still be in clauses
+  void removeLiteral(Integer literal)
+  {
+    for(int c = 0; c < this.clauses.size(); c++ )
+    {
+      //Check if clause contains literal
+      if(this.clauses.get(c).contains(literal))
+      {
+        //Remove literal
+        this.clauses.get(c).remove(literal);
+      }
+    }
+  }
+
   public String toString()
   {
     StringBuffer buf = new StringBuffer();
     buf.append("Number of variables: " + numVars + "\n");
 		buf.append("Number of clauses: " + numClauses + "\n");
-    buf.append("Variables: " + vars.toString() + "\n");
-    for(int c = 0; c < clauses.size(); c++)
-			buf.append("Clause " + c + ": " + clauses.get(c).toString() + "\n");
+    buf.append("Variables: " + this.vars.toString() + "\n");
+    for(int c = 0; c < this.clauses.size(); c++)
+			buf.append("Clause " + c + ": " + this.clauses.get(c).toString() + "\n");
     return buf.toString();
   }
 }
