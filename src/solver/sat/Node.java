@@ -22,12 +22,13 @@ public class Node
   //Hashmap of variable assignments until this point in branching
   HashMap<Integer, Boolean> assignments = new HashMap<Integer, Boolean>();
 
+
   //Constructor for Node Object class
   public Node(int var, boolean var_assign, HashMap<Integer, Boolean> assignments)
   {
 		this.var = var;
 		this.var_assign = var_assign;
     this.assignments = assignments;
-	}
+  }
 
 }

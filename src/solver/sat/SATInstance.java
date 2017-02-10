@@ -6,12 +6,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Iterator;
+import java.util.Stack;
+
+
+
 
 /**
  * A simple class to represent a SAT instance.
  */
 public class SATInstance
 {
+
   // The number of variables
   int numVars;
 
@@ -21,11 +27,14 @@ public class SATInstance
   // The set of variables (variables are strictly positive integers)
   Set<Integer> vars = new HashSet<Integer>();
 
+  Stack<Node> branches = new Stack<Node>();
+
   //Hashmap of variable assignments
-  HashMap<Integer, Boolean> assignments = new HashMap<Integer, Boolean>();
+  HashMap<Integer, Boolean> globalAssignments = new HashMap<Integer, Boolean>();
 
   // The list of clauses
   List<Set<Integer>> clauses = new ArrayList<Set<Integer>>();
+  List<Set<Integer>> originalClauses = new ArrayList<Set<Integer>>();
 
   public SATInstance(int numVars, int numClauses)
   {
@@ -86,6 +95,31 @@ public class SATInstance
   }
 
   
+  protected boolean eliminatePureVariables(){
+   boolean foundPure = false; 
+   Set<Integer> usedVars = new HashSet<Integer>();
+
+	 
+   for (int i = 0; i < numClauses; i++)
+   {
+	usedVars.addAll(clauses.get(i));
+   }
+
+   Iterator<Integer> setIterator = usedVars.iterator();
+   while (setIterator.hasNext())
+  {
+	Integer thisInt = setIterator.next();
+	if (!usedVars.contains(-thisInt))
+	{
+		setVariable(thisInt);
+		System.out.println("no opp: " + thisInt);
+		foundPure = true;
+	}
+  }
+
+    return foundPure; 
+  }
+
 
   protected boolean eliminateFirstUnitClause(){
    boolean foundUnit = false; 
@@ -109,8 +143,14 @@ public class SATInstance
   //NOTE: this method may have to change substantially to support branching
   private void setVariable(Integer varToAssign){ 
      //mark the choice in our instance
-     assignments.put(Math.abs(varToAssign), varToAssign > 0);
-
+     if(branches.empty())
+     {
+     	globalAssignments.put(Math.abs(varToAssign), varToAssign > 0);
+     }
+     else
+     {
+	branches.peek().assignments.put(Math.abs(varToAssign), varToAssign > 0);
+     }
      //propagate changes to other clauses
      removeLiteral(-1 * varToAssign);
      removeClausesContaining(varToAssign);
@@ -122,7 +162,7 @@ public class SATInstance
 */
   public void describeAssignments()
   {
-	for (Map.Entry<Integer, Boolean> entry : assignments.entrySet())
+	for (Map.Entry<Integer, Boolean> entry : globalAssignments.entrySet())
 	{
 		System.out.println(entry.getKey() + " : " + entry.getValue());
 	}

@@ -1,6 +1,6 @@
 c simple_unsat.cnf
 c
-p cnf 2 2
+p cnf 2 3
 1 2 0
 -1 0
 -2 0

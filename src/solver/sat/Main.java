@@ -27,8 +27,17 @@ public class Main
 		SATInstance instance = DimacsParser.parseCNFFile(input);
 
 		System.out.println(instance);
+		
+		boolean eliminatedUnit = true;
+		boolean eliminatedPure = true;
+		while (eliminatedUnit || eliminatedPure)
+		{
+			eliminatedUnit = instance.eliminateFirstUnitClause(); 
+			eliminatedPure = instance.eliminatePureVariables();
+		}
+		//instance.originalClauses = instance.clauses;
+		
 
-		instance.eliminateFirstUnitClause();
 		System.out.println(instance);
 		instance.describeAssignments();
 
