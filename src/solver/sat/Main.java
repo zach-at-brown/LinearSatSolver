@@ -28,17 +28,30 @@ public class Main
 
 		System.out.println(instance);
 		
-		boolean eliminatedUnit = true;
-		boolean eliminatedPure = true;
-		while (eliminatedUnit || eliminatedPure)
+		boolean isSat = false;
+
+		while (true)
 		{
-			eliminatedUnit = instance.eliminateFirstUnitClause(); 
-			eliminatedPure = instance.eliminatePureVariables();
+			if(instance.eliminateFirstUnitClause())
+			{
+				continue;
+			}
+			if(instance.eliminatePureVariables())
+			{
+				continue;
+			}
+
+			if(instance.numClauses == 0)
+			{
+				isSat = true;
+			}
+
+			break;
 		}
 		//instance.originalClauses = instance.clauses;
 		
 
-		System.out.println(instance);
+		System.out.println("is sat: " + isSat);
 		instance.describeAssignments();
 
 		watch.stop();
