@@ -111,7 +111,15 @@ public class SATInstance
 	Integer thisInt = setIterator.next();
 	if (!usedVars.contains(-thisInt))
 	{
-		setVariable(thisInt);
+    if(branches.empty())
+    {
+      setVariable(thisInt,null);
+    }
+    else
+    {
+      setVariable(thisInt, branches.peek());
+    }
+
 		System.out.println("no opp: " + thisInt);
 		foundPure = true;
 	}
@@ -130,7 +138,16 @@ public class SATInstance
 	  //System.out.println("unit clause at index" + i);
 	  Integer entryToSet = (Integer)(IthClause.toArray())[0];
 	  System.out.println("assigning " + Math.abs(entryToSet) + " to be " + (entryToSet > 0));
-	  setVariable(entryToSet);
+
+    if(branches.empty())
+    {
+      setVariable(entryToSet,null);
+    }
+    else
+    {
+      setVariable(entryToSet, branches.peek());
+    }
+
 	  foundUnit = true;
 	  break;
 
@@ -141,7 +158,7 @@ public class SATInstance
   }
 
   //NOTE: this method may have to change substantially to support branching
-  private void setVariable(Integer varToAssign){
+  private void setVariable(Integer varToAssign, Node currNode){
      //mark the choice in our instance
      if(branches.empty())
      {
@@ -149,7 +166,7 @@ public class SATInstance
      }
      else
      {
-	branches.peek().assignments.put(Math.abs(varToAssign), varToAssign > 0);
+       currNode.assignments.put(Math.abs(varToAssign), varToAssign > 0);
      }
      //propagate changes to other clauses
      removeLiteral(-1 * varToAssign);
@@ -168,23 +185,112 @@ public class SATInstance
 	}
   }
 
+  //Apply variable assignments up until a bad decision is made
+  public List<Set<Integer>> applyAssignments(Node currNode)
+  {
+    List<Set<Integer>> clausesToReturn = originalClauses;
+    Iterator<Integer> setIterator = null;
+    for(int c=0; c<clausesToReturn.size(); c++ )
+    {
+      setIterator = currNode.assignments.keySet().iterator();
+      while(setIterator.hasNext())
+      {
+        Integer currKey = Math.abs(setIterator.next());
+        if(clausesToReturn.get(c).contains(currKey))
+        {
+          //If variable is assigned True
+          if(currNode.assignments.get(currKey))
+          {
+            removeClause(c);
+            continue;
+          }
+          else{ //Variable is assigned False
+            //If !Variable is found anywhere in same clause, remove clause
+            if(clausesToReturn.get(c).contains(-1*currKey))
+            {
+              removeClause(c);
+              continue;
+            }
+            else  //no choice but to remove variable from clause
+            {
+              clausesToReturn.remove(currKey);
+            }
+          }
+        }
+      }
+    }
+    return clausesToReturn;
+  }
+
   //Checks if there are any empty clauses
   //NOTE : Probably need to append more conditions
   public boolean isUnsat()
   {
-    boolean unsat = false;
-    if(this.numClauses > 0)
+    for (int i = 0; i < numClauses; i++)
     {
-      for(int c = 0; c < this.clauses.size(); c++)
+      if(clauses.get(i).isEmpty())
       {
-        if(this.clauses.get(c).isEmpty())
-        {
-          unsat = true;
-          break;
-        }
+        return true;
       }
     }
-    return unsat;
+    return false;
+  }
+
+  public boolean solve()
+  {
+    while (true)
+		{
+      //Check first rule
+			if(eliminateFirstUnitClause())
+			{
+				continue;
+			}
+      //Check second rule
+			if(eliminatePureVariables())
+      {
+				continue;
+			}
+      //Check for empty clauses
+			if(numClauses == 0)
+			{
+				return true;
+			}
+      //Checks if current branch is UNSAT. Tries opposite assignment if true
+      //Then backtracks
+      if(isUnsat())
+      {
+        if(branches.empty())
+        {
+          return false;
+        }
+
+        Node lastDecision = branches.pop();
+        System.out.println("Bad decision : " + lastDecision.var + lastDecision.var_assign);
+        Node current = branches.peek();
+        setVariable(lastDecision.var, lastDecision);
+        continue;
+      }
+      else
+      {
+        Set<Integer> unassignedVars = vars;
+        Node newGuess = new Node();
+        if(branches.empty())
+        {
+          unassignedVars.removeAll(globalAssignments.keySet());
+          newGuess = new Node(unassignedVars.iterator().next(), false, globalAssignments);
+        }
+        else
+        {
+          unassignedVars.removeAll(branches.peek().assignments.keySet());
+          newGuess = new Node(unassignedVars.iterator().next(), false, branches.peek().assignments);
+        }
+
+        System.out.println("About to assign true to " + newGuess.var);
+        setVariable(newGuess.var, newGuess);
+
+        branches.push(newGuess);
+      }
+		}
   }
 
 

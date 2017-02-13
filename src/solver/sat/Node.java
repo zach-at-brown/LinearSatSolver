@@ -16,12 +16,19 @@ public class Node
   //Variable to be branched on
   Integer var;
 
-  // Assignment of current variable of branchingg
+  // Assignment of current variable of branching
   Boolean var_assign;
 
   //Hashmap of variable assignments until this point in branching
   HashMap<Integer, Boolean> assignments = new HashMap<Integer, Boolean>();
 
+  //Empty argument constructor
+  public Node()
+  {
+    this.var = 0;
+    this.var_assign = false;
+    this.assignments = null;
+  }
 
   //Constructor for Node Object class
   public Node(int var, boolean var_assign, HashMap<Integer, Boolean> assignments)

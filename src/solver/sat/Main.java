@@ -27,29 +27,10 @@ public class Main
 		SATInstance instance = DimacsParser.parseCNFFile(input);
 
 		System.out.println(instance);
-		
-		boolean isSat = false;
 
-		while (true)
-		{
-			if(instance.eliminateFirstUnitClause())
-			{
-				continue;
-			}
-			if(instance.eliminatePureVariables())
-			{
-				continue;
-			}
-
-			if(instance.numClauses == 0)
-			{
-				isSat = true;
-			}
-
-			break;
-		}
+		boolean isSat = instance.solve();
 		//instance.originalClauses = instance.clauses;
-		
+
 
 		System.out.println("is sat: " + isSat);
 		instance.describeAssignments();
@@ -58,10 +39,6 @@ public class Main
     System.out.println("Instance: " + filename + " Time: " + String.format("%.2f",watch.getTime()) + " Result: ?");
   }
 
-  
+
 
 }
-
-
-
-
